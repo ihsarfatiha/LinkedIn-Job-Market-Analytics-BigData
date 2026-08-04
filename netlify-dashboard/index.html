@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard analitik interaktif untuk LinkedIn Job Postings 2023-2024. Eksplorasi tren pasar kerja, prediksi gaji, dan performa model ML.">
+    <title>LinkedIn Job Market Analytics Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💼</text></svg>">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<!-- Mobile Menu Toggle -->
+<button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+
+<div class="dashboard">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SIDEBAR
+         ═══════════════════════════════════════════════════════════ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">💼</div>
+            <div>
+                <div class="brand-text">LinkedIn Analytics</div>
+                <div class="brand-sub">Job Market Dashboard</div>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Dashboard</div>
+            <div class="nav-item active" data-page="overview">
+                <span class="nav-icon">🏠</span> Overview
+            </div>
+            <div class="nav-item" data-page="eda">
+                <span class="nav-icon">📊</span> EDA Explorer
+            </div>
+            <div class="nav-item" data-page="model">
+                <span class="nav-icon">🤖</span> Model Performance
+            </div>
+            <div class="nav-item" data-page="predictor">
+                <span class="nav-icon">🔮</span> Salary Estimator
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-label">Report</div>
+            <div class="nav-item" data-page="report">
+                <span class="nav-icon">📋</span> Laporan Eksekutif
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <p>📊 Big Data Analytics</p>
+            <p>LinkedIn Job Postings 2023-2024</p>
+            <p>PySpark + Scikit-Learn</p>
+        </div>
+    </aside>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         MAIN CONTENT
+         ═══════════════════════════════════════════════════════════ -->
+    <main class="main-content">
+
+        <!-- ── PAGE: OVERVIEW ────────────────────────────────────── -->
+        <section class="page active" id="page-overview">
+            <div class="page-header">
+                <h1 class="page-title">LinkedIn Job Market Analytics Dashboard</h1>
+                <p class="page-subtitle">Analisis Komprehensif Tren Pasar Kerja dari 124.000+ Job Postings</p>
+            </div>
+
+            <!-- KPIs -->
+            <div class="grid grid-4" id="overview-kpis">
+                <div class="kpi-card">
+                    <span class="kpi-icon">📋</span>
+                    <div class="kpi-value" id="kpi-total">—</div>
+                    <div class="kpi-label">Total Postings</div>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-icon">💰</span>
+                    <div class="kpi-value" id="kpi-salary">—</div>
+                    <div class="kpi-label">Avg Annual Salary</div>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-icon">🏢</span>
+                    <div class="kpi-value" id="kpi-categories">—</div>
+                    <div class="kpi-label">Job Categories</div>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-icon">🌐</span>
+                    <div class="kpi-value" id="kpi-remote">—</div>
+                    <div class="kpi-label">Remote Jobs</div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Charts Row 1 -->
+            <div class="grid grid-2">
+                <div class="chart-card">
+                    <div class="chart-title"><span class="icon">💰</span> Distribusi Gaji Tahunan</div>
+                    <div id="chart-salary-dist" style="height:400px">
+                        <div class="loading"><div class="spinner"></div>Loading chart...</div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title"><span class="icon">📋</span> Distribusi Tipe Pekerjaan</div>
+                    <div id="chart-work-type" style="height:400px">
+                        <div class="loading"><div class="spinner"></div>Loading chart...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="grid grid-2" style="margin-top:1.5rem">
+                <div class="chart-card">
+                    <div class="chart-title"><span class="icon">🏢</span> Median Gaji per Kategori Pekerjaan</div>
+                    <div id="chart-category-salary" style="height:500px">
+                        <div class="loading"><div class="spinner"></div>Loading chart...</div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title"><span class="icon">📈</span> Gaji per Experience Level</div>
+                    <div id="chart-exp-salary" style="height:500px">
+                        <div class="loading"><div class="spinner"></div>Loading chart...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── PAGE: EDA EXPLORER ────────────────────────────────── -->
+        <section class="page" id="page-eda">
+            <div class="page-header">
+                <h1 class="page-title">Exploratory Data Analysis</h1>
+                <p class="page-subtitle">Eksplorasi Interaktif Dataset LinkedIn Job Postings</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="section-header">🔍 Filter Data</div>
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label class="filter-label">Kategori Pekerjaan</label>
+                    <select class="filter-select" id="filter-category">
+                        <option value="All">Semua Kategori</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Experience Level</label>
+                    <select class="filter-select" id="filter-experience">
+                        <option value="All">Semua Level</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Remote Status</label>
+                    <select class="filter-select" id="filter-remote">
+                        <option value="All">Semua</option>
+                        <option value="1">Remote Only</option>
+                        <option value="0">On-site Only</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="info-badge" id="eda-count">
+                📊 Menampilkan data ...
+            </div>
+
+            <!-- EDA Charts -->
+            <div class="grid grid-2">
+                <div class="chart-card">
+                    <div class="chart-title"><span class="icon">📊</span> Distribusi Gaji (Filtered)</div>
+                    <div id="chart-eda-salary" style="height:400px">
+                        <div class="loading"><div class="spinner"></div>Loading...</div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title"><span class="icon">🌍</span> Top 10 Lokasi (Median Salary)</div>
+                    <div id="chart-eda-location" style="height:400px">
+                        <div class="loading"><div class="spinner"></div>Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-2" style="margin-top:1.5rem">
+                <div class="chart-card">
+                    <div class="chart-title"><span class="icon">🏠</span> Remote vs On-site: Perbandingan Gaji</div>
+                    <div id="chart-eda-remote" style="height:400px">
+                        <div class="loading"><div class="spinner"></div>Loading...</div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title"><span class="icon">📈</span> Hubungan Views vs Applies</div>
+                    <div id="chart-eda-scatter" style="height:400px">
+                        <div class="loading"><div class="spinner"></div>Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descriptive Stats -->
+            <div class="chart-card" style="margin-top:1.5rem">
+                <div class="chart-title"><span class="icon">📋</span> Statistik Deskriptif (Filtered)</div>
+                <div id="eda-stats-table"></div>
+            </div>
+        </section>
+
+        <!-- ── PAGE: MODEL PERFORMANCE ───────────────────────────── -->
+        <section class="page" id="page-model">
+            <div class="page-header">
+                <h1 class="page-title">Machine Learning Model Performance</h1>
+                <p class="page-subtitle">Perbandingan Algoritma Regresi & Klasifikasi untuk Prediksi Gaji</p>
+            </div>
+
+            <!-- Regression Model Cards -->
+            <div class="section-header">🏆 Ringkasan Model Regresi</div>
+            <div class="grid grid-3" id="model-cards">
+                <div class="loading"><div class="spinner"></div>Loading models...</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Metrics Table -->
+            <div class="section-header">📊 Tabel Metrik Lengkap (Regresi)</div>
+            <div class="chart-card">
+                <div id="regression-table"></div>
+            </div>
+
+            <!-- R2 & MAE Charts -->
+            <div class="grid grid-2" style="margin-top:1.5rem">
+                <div class="chart-card">
+                    <div class="chart-title"><span class="icon">📊</span> Perbandingan R² Score</div>
+                    <div id="chart-r2" style="height:400px">
+                        <div class="loading"><div class="spinner"></div>Loading...</div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title"><span class="icon">📊</span> Perbandingan MAE</div>
+                    <div id="chart-mae" style="height:400px">
+                        <div class="loading"><div class="spinner"></div>Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actual vs Predicted -->
+            <div class="section-header">🎯 Actual vs Predicted (Test Set)</div>
+            <div class="model-selector" id="scatter-model-selector"></div>
+            <div class="chart-card">
+                <div id="chart-scatter-pred" style="height:500px">
+                    <div class="loading"><div class="spinner"></div>Loading...</div>
+                </div>
+            </div>
+
+            <!-- Feature Importance -->
+            <div class="section-header">🔑 Feature Importance (Random Forest)</div>
+            <div class="chart-card">
+                <div id="chart-feature-imp" style="height:500px">
+                    <div class="loading"><div class="spinner"></div>Loading...</div>
+                </div>
+            </div>
+
+            <!-- Classification Metrics -->
+            <div class="section-header">🧩 Model Klasifikasi</div>
+            <div class="chart-card" style="margin-bottom:1.5rem">
+                <div class="chart-title"><span class="icon">📊</span> Tabel Metrik Klasifikasi</div>
+                <div id="classification-table"></div>
+            </div>
+
+            <!-- Confusion Matrices -->
+            <div class="grid grid-3" id="confusion-matrices">
+                <div class="loading"><div class="spinner"></div>Loading...</div>
+            </div>
+        </section>
+
+        <!-- ── PAGE: SALARY ESTIMATOR ────────────────────────────── -->
+        <section class="page" id="page-predictor">
+            <div class="page-header">
+                <h1 class="page-title">Salary Estimation Tool</h1>
+                <p class="page-subtitle">Estimasi Gaji Berdasarkan Data Historis LinkedIn Job Postings</p>
+            </div>
+
+            <div class="info-badge">
+                💡 Estimasi berdasarkan statistik deskriptif dari data historis (median, Q1-Q3). Bukan prediksi model ML.
+            </div>
+
+            <div class="predictor-form">
+                <div class="section-header" style="margin-top:0">📝 Masukkan Detail Pekerjaan</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Experience Level</label>
+                        <select class="form-select" id="pred-experience">
+                            <option value="All">Semua Level</option>
+                            <option value="Internship">Internship</option>
+                            <option value="Entry level">Entry Level</option>
+                            <option value="Associate">Associate</option>
+                            <option value="Mid-Senior level" selected>Mid-Senior Level</option>
+                            <option value="Director">Director</option>
+                            <option value="Executive">Executive</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Job Category</label>
+                        <select class="form-select" id="pred-category">
+                            <option value="All">Semua Kategori</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Remote Work</label>
+                        <select class="form-select" id="pred-remote">
+                            <option value="any">Tidak Dipilih</option>
+                            <option value="yes">Remote</option>
+                            <option value="no">On-site</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="predict-btn" id="predict-btn">
+                    🔮 Lihat Estimasi Gaji
+                </button>
+            </div>
+
+            <div id="prediction-output"></div>
+        </section>
+
+        <!-- ── PAGE: LAPORAN EKSEKUTIF ───────────────────────────── -->
+        <section class="page" id="page-report">
+            <div class="page-header">
+                <h1 class="page-title">Laporan Eksekutif</h1>
+                <p class="page-subtitle">Temuan Utama, Insight Bisnis & Rekomendasi Strategis</p>
+            </div>
+
+            <!-- A. Temuan Utama -->
+            <div class="section-header">🔍 A. Temuan Utama (Main Findings)</div>
+
+            <div class="finding-card">
+                <strong>1. Kesenjangan Gaji Berdasarkan Experience Level Sangat Signifikan</strong>
+                <div class="detail">Posisi Executive-level menawarkan median gaji 3-5x lipat lebih tinggi dibanding Entry-level. Gap terbesar terjadi di industri Technology dan Finance.</div>
+            </div>
+            <div class="finding-card">
+                <strong>2. Remote Work Setara atau Lebih Tinggi dari On-site</strong>
+                <div class="detail">Posisi remote cenderung menawarkan gaji setara atau lebih tinggi, terutama di sektor teknologi. Remote work bukan lagi benefit tambahan, melainkan standar industri.</div>
+            </div>
+            <div class="finding-card">
+                <strong>3. Technology & Finance Mendominasi Kompensasi Tertinggi</strong>
+                <div class="detail">Median gaji di sektor teknologi dan keuangan 30-50% lebih tinggi dari median keseluruhan. Healthcare dan Education berada di bawah rata-rata.</div>
+            </div>
+            <div class="finding-card">
+                <strong>4. Title Seniority Berkorelasi Kuat dengan Gaji</strong>
+                <div class="detail">Judul dengan kata 'Senior', 'Lead', atau 'Manager' berkorelasi signifikan dengan range kompensasi yang lebih tinggi.</div>
+            </div>
+            <div class="finding-card">
+                <strong>5. Engagement Tidak Linear dengan Gaji</strong>
+                <div class="detail">Posisi bergaji tinggi tidak selalu mendapat lebih banyak views. Posisi entry-level justru menarik lebih banyak pelamar (supply > demand).</div>
+            </div>
+
+            <!-- B. Insight Bisnis -->
+            <div class="section-header">💡 B. Insight Bisnis</div>
+            <div class="grid grid-2">
+                <div>
+                    <div class="insight-box">
+                        <strong>📊 Salary Benchmarking Otomatis</strong>
+                        <div class="text">Model prediksi gaji dapat digunakan untuk benchmarking kompensasi terhadap pasar. Jika gaji yang ditawarkan di bawah prediksi model, perusahaan berisiko kehilangan kandidat.</div>
+                    </div>
+                    <div class="insight-box">
+                        <strong>🌍 Geographic Arbitrage</strong>
+                        <div class="text">Perbedaan gaji antar kota untuk posisi yang sama bisa mencapai 50-100%. Remote workers dari kota berbiaya rendah mendapat keuntungan signifikan.</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="insight-box">
+                        <strong>📋 Transparansi Gaji = Lebih Banyak Aplikasi</strong>
+                        <div class="text">Posting dengan informasi gaji transparan mendapat 40-60% lebih banyak aplikasi. Transparansi gaji bukan hanya etis, tetapi strategis.</div>
+                    </div>
+                    <div class="insight-box">
+                        <strong>🎯 Skill Premium</strong>
+                        <div class="text">Postingan yang mensyaratkan skill Cloud, AI/ML, Data Engineering menawarkan gaji premium 15-25% lebih tinggi dibanding posisi umum di level yang sama.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- C. Rekomendasi Strategis -->
+            <div class="section-header">🎯 C. Rekomendasi Strategis</div>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="tab-company">🏢 Untuk Perusahaan</button>
+                <button class="tab-btn" data-tab="tab-seeker">👨‍💼 Untuk Job Seekers</button>
+                <button class="tab-btn" data-tab="tab-policy">🏛️ Untuk Policymakers</button>
+            </div>
+
+            <div class="tab-content active" id="tab-company">
+                <div class="recommendation-card"><strong>Implementasikan Transparansi Gaji</strong> — Cantumkan range gaji di setiap posting untuk meningkatkan kualitas dan kuantitas pelamar.</div>
+                <div class="recommendation-card"><strong>Gunakan Model Prediksi untuk Compensation Planning</strong> — Integrasikan model ke dalam HRIS untuk otomatisasi salary benchmarking.</div>
+                <div class="recommendation-card"><strong>Sesuaikan Strategi Remote Work</strong> — Tawarkan opsi remote/hybrid dengan kompensasi kompetitif.</div>
+                <div class="recommendation-card"><strong>Investasi pada Upskilling</strong> — Posisi yang mensyaratkan skill emerging (AI, Cloud) tumbuh 3x lebih cepat.</div>
+            </div>
+
+            <div class="tab-content" id="tab-seeker">
+                <div class="recommendation-card"><strong>Negosiasi Berbasis Data</strong> — Gunakan prediksi model sebagai basis negosiasi gaji.</div>
+                <div class="recommendation-card"><strong>Fokus pada High-Value Skills</strong> — Prioritaskan skill dengan salary premium tertinggi (Cloud, AI/ML, Data Engineering).</div>
+                <div class="recommendation-card"><strong>Pertimbangkan Geographic Arbitrage</strong> — Remote work dari kota berbiaya rendah untuk perusahaan di kota premium.</div>
+                <div class="recommendation-card"><strong>Target Mid-Senior Level</strong> — Gap terbesar antara Associate dan Mid-Senior; investasi 2-3 tahun pengalaman memberikan ROI tertinggi.</div>
+            </div>
+
+            <div class="tab-content" id="tab-policy">
+                <div class="recommendation-card"><strong>Regulasi Transparansi Gaji</strong> — Dorong kebijakan yang mewajibkan disclosure range gaji di postingan pekerjaan.</div>
+                <div class="recommendation-card"><strong>Program Reskilling Nasional</strong> — Fokuskan pada skill yang teridentifikasi memiliki demand tinggi dan gap supply.</div>
+                <div class="recommendation-card"><strong>Monitor Kesenjangan Kompensasi</strong> — Gunakan data untuk mengidentifikasi dan mengatasi kesenjangan upah antar demografi.</div>
+            </div>
+
+            <!-- D. Keterbatasan -->
+            <div class="section-header">⚠️ D. Keterbatasan Analisis</div>
+            <div class="warning-card"><span class="icon">⚠️</span> <strong>Bias Data:</strong> Dataset hanya mencakup posting LinkedIn — tidak merepresentasikan seluruh pasar kerja.</div>
+            <div class="warning-card"><span class="icon">⚠️</span> <strong>Missing Salary Data:</strong> ~60-70% posting tidak mencantumkan gaji, model hanya dilatih pada subset.</div>
+            <div class="warning-card"><span class="icon">⚠️</span> <strong>Temporal Limitation:</strong> Data hanya 2023-2024, tidak menangkap tren jangka panjang.</div>
+            <div class="warning-card"><span class="icon">⚠️</span> <strong>Geographic Limitation:</strong> Dominasi data dari AS, insight mungkin tidak applicable secara global.</div>
+            <div class="warning-card"><span class="icon">⚠️</span> <strong>No Actual Outcome:</strong> Dataset mencatat posting, bukan gaji aktual setelah negosiasi.</div>
+
+            <!-- E. Saran Pengembangan -->
+            <div class="section-header">🚀 E. Saran Pengembangan</div>
+            <div class="dev-grid">
+                <div class="dev-card">
+                    <h4>📊 Data & Model</h4>
+                    <ul>
+                        <li>Integrasi data Glassdoor/PayScale untuk validasi silang</li>
+                        <li>NLP/LLM untuk ekstrak fitur dari deskripsi pekerjaan</li>
+                        <li>Ensemble stacking dari 3 model</li>
+                        <li>SHAP analysis untuk explainability</li>
+                    </ul>
+                </div>
+                <div class="dev-card">
+                    <h4>🏗️ Infrastruktur</h4>
+                    <ul>
+                        <li>Apache Kafka untuk real-time streaming</li>
+                        <li>Cloud deployment (AWS SageMaker / GCP Vertex AI)</li>
+                        <li>MLOps pipeline (MLflow) untuk versioning</li>
+                        <li>Delta Lake untuk data lakehouse</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <p>📊 Laporan ini dihasilkan dari analisis Big Data end-to-end</p>
+                <p>Dataset: LinkedIn Job Postings (2023-2024) | Tools: PySpark + Scikit-Learn</p>
+                <p>© 2026 — Big Data Analytics Project</p>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

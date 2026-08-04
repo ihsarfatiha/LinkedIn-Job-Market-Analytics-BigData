@@ -1,0 +1,38 @@
+# ============================================
+# BIGDATA-UAS .gitignore
+# ============================================
+
+# --- Dataset besar (melebihi limit GitHub 100MB) ---
+data/postings.csv
+data/processed_postings.parquet/
+
+# --- Model files besar (.pkl) ---
+*.pkl
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.whl
+venv/
+.env
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- OS ---
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# --- Jupyter ---
+.ipynb_checkpoints/
