@@ -297,7 +297,7 @@ Faktor-faktor yang paling dominan dalam memprediksi besaran kompensasi pekerjaan
 
 ---
 
-## 🌐 Interactive Dashboard
+## 🌐 Interactive Dashboard https://linkedln-job-market-analytics.netlify.app/ 
 
 Project ini dilengkapi dengan Web Dashboard interaktif yang dibangun menggunakan HTML, CSS modern (Glassmorphism), dan Plotly.js.
 
