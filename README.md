@@ -427,20 +427,4 @@ Buka browser di `http://localhost:8080`.
 2. **Kompensasi Sangat Dipengaruhi Industri dan Lokasi:** Industri perusahaan (15.79%) dan negara bagian (14.84%) menjadi penentu utama besaran gaji, melampaui pengaruh jumlah tahun pengalaman semata.
 3. **Keunggulan Gradient Boosting:** Model **XGBoost** secara konsisten mengungguli Random Forest dan Linear Regression dalam akurasi regresi ($R^2 = 0.3324$) maupun klasifikasi ($58.64\%$).
 4. **Peluang Kerja Remote Masih Relevan:** Sebanyak 12.3% lowongan menawarkan opsi *Full Remote*, terkonsentrasi pada bidang *Software Engineering*, *Data & Analytics*, dan *Design*.
-
----
-
-## 👨‍💻 Profil Pengembang
-
-Proyek ini disusun sebagai bagian dari pemenuhan Tugas Akhir / UAS Mata Kuliah **Big Data Analytics**:
-
-- **Nama:** Muhammad Ihsar Fatiha
-- **NIM:** 41523010202
-- **GitHub:** [@ihsarfatiha](https://github.com/ihsarfatiha)
-- **Repository:** [LinkedIn-Job-Market-Analytics-BigData](https://github.com/ihsarfatiha/LinkedIn-Job-Market-Analytics-BigData)
-
----
-
-<div align="center">
-  <sub>Dibuat dengan ❤️ untuk pembelajaran Big Data & Machine Learning • 2026</sub>
 </div>
